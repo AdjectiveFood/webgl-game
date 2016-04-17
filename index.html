@@ -1,0 +1,43 @@
+<html>
+    <head>
+    	<link rel="stylesheet" type="text/css" href="styles/canvas.css">
+    	<!-- Dependencies -->
+    	<script src="dependencies/gl-matrix-min.js"></script>
+    	<!-- Scripts -->
+    	<script src="scripts/Utils.js"></script>
+    	<script src="scripts/ShapeFactory.js"></script>
+    	<script src="scripts/VisualObject.js"></script>
+        <script src="scripts/webglBasic.js"></script>
+        <!-- Shaders -->
+        <script id="shader-fs" type="x-shader/x-fragment">
+        /* jshint ignore:start */
+       		precision mediump float;
+        	uniform vec4 rgba;
+
+			void main(void) {
+				gl_FragColor = rgba;
+			}
+		/* jshint ignore:end */
+		</script>
+		<script id="shader-vs" type="x-shader/x-vertex">
+		/* jshint ignore:start */
+			attribute vec3 aVertexPosition;
+
+			uniform mat4 uMVMatrix;
+			uniform mat4 uPMatrix;
+
+			void main(void) {
+				gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			}
+		/* jshint ignore:end */
+		</script>
+    </head>
+    <body onload="webGL.startWebGL();">
+    	<div id="canvasContainer">
+	        <canvas id="cMain" width="800" height="600" class="gameCanvas">
+	            Your browser doesn't appear to support the 
+	            <code>&lt;canvas&gt;</code> element.
+	        </canvas>
+    	</div>
+    </body>
+</html>

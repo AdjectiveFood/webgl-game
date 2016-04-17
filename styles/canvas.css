@@ -1,0 +1,8 @@
+#canvasContainer{
+	min-width: 100%;
+}
+
+.gameCanvas{
+	display: table;
+	margin: 0 auto;
+}
