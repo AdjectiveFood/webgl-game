@@ -8,6 +8,7 @@
     	<script src="scripts/ShapeFactory.js"></script>
     	<script src="scripts/VisualObject.js"></script>
         <script src="scripts/WebglBasic.js"></script>
+        <script src="scripts/GameLoop.js"></script>
         <!-- Shaders -->
         <script id="shader-fs" type="x-shader/x-fragment">
         /* jshint ignore:start */
@@ -32,12 +33,13 @@
 		/* jshint ignore:end */
 		</script>
     </head>
-    <body onload="WebGL.smokeTest('cMain')">
+    <body onload="GameLoop.startGame()">
     	<div id="canvasContainer">
 	        <canvas id="cMain" width="800" height="600" class="gameCanvas">
 	            Your browser doesn't appear to support the 
 	            <code>&lt;canvas&gt;</code> element.
 	        </canvas>
     	</div>
+    	<span id="fpsCounter"></span>
     </body>
 </html>

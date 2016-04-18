@@ -35,6 +35,7 @@ var WebGL = (function () {
         **/
         function startWebGL(canvasDomId) {
             var canvas = document.getElementById(canvasDomId);
+            Utils.assert(canvas !== null);
             gl = initWebGL(canvas);
             
             if (gl) {
@@ -48,6 +49,8 @@ var WebGL = (function () {
                 //load the shaders from the Dom
                 setFragmentShader('shader-fs');
                 setVertexShader('shader-vs');
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
             }
 
             return this;
@@ -128,6 +131,18 @@ var WebGL = (function () {
             }
         }
 
+        const setVertexShader = function(domId){
+            data.vertexShader = getShaderFromDom('shader-vs');
+            useShaderProgram();
+        }
+
+        const setFragmentShader = function(domId){
+            data.fragmentShader = getShaderFromDom('shader-fs');
+            useShaderProgram();
+        }
+
+        //Performance matter for this function
+        //TODO: Batch draws together
         function drawSingleObject(drawable){
             gl.uniform4fv(data.currentShaderProgram.rgba, drawable.getColor());
 
@@ -140,38 +155,30 @@ var WebGL = (function () {
             gl.uniformMatrix4fv(data.currentShaderProgram.mvMatrixUniform, false, mvMatrix);
 
             var shape = drawable.getShape();
-            var vertexBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(shape.vertices), gl.STATIC_DRAW);
 
             gl.vertexAttribPointer(data.currentShaderProgram.vertexPositionAttribute, shape.itemSize, gl.FLOAT, false, 0, 0);
 
-            gl.drawArrays(gl.TRIANGLE_FAN, 0, shape.numItem);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, shape.numItem);
         }
 
-        const setVertexShader = function(domId){
-            data.vertexShader = getShaderFromDom('shader-vs');
-            useShaderProgram();
-        }
-
-        const setFragmentShader = function(domId){
-            data.fragmentShader = getShaderFromDom('shader-fs');
-            useShaderProgram();
-        }
-
+        //Performance matter for this function
         const drawScene = function() {
+            var frame = {vertices: [], numItem: 0, itemSize: 3};
+
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
             clearScreen();
 
             var pMatrix = mat4.create();
-            mat4.ortho(pMatrix, 0.0, gl.drawingBufferWidth, 0.0, gl.drawingBufferHeight, 0.1, 100);
+            mat4.ortho(pMatrix, 0.0, gl.drawingBufferWidth, 0.0, gl.drawingBufferHeight, -0.1, -100);
             gl.uniformMatrix4fv(data.currentShaderProgram.pMatrixUniform, false, pMatrix);
 
-            data.drawableBuffer.forEach(function(drawable){
-                drawSingleObject(drawable);
-            });
+            for(var i=0; i < data.drawableBuffer.length; i++){
+                drawSingleObject(data.drawableBuffer[i]);
+            }
 
-            data.drawableBuffer = data.drawableBuffer.slice(0, data.drawableBuffer.length);
+            data.drawableBuffer = [];
         }
 
         const addToDraw = function(drawable){
