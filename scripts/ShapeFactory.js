@@ -9,7 +9,7 @@ const ShapeFactory = (function(){
     */
     function hexagonVertices(angle, vertices, limit){
         if(angle < limit){
-            return hexagonVertices(angle + Math.PI/3, vertices.concat([Math.cos(angle), Math.sin(angle), 0]), limit);
+            return hexagonVertices(angle + Math.PI/3, vertices.concat([Math.cos(angle), Math.sin(angle), 0, 0, 0, 0]), limit);
         }else{
             return vertices;
         }
